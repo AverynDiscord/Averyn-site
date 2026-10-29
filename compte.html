@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Mon compte</title>
+<style>
+:root{
+  --bg:#b4b4b2; --fill:#e00004; --shade:#5a0000; --ink:#1d1d1b; --paper:#ececea; --mute:#5b5b57;
+  --cond:Impact,Haettenschweiler,"Arial Narrow Bold","Roboto Condensed","Arial Black",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html{height:100%}
+body{
+  margin:0;min-height:100%;background:var(--bg);color:var(--ink);
+  font:17px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif;
+  display:grid;place-items:center;
+  padding:calc(20px + env(safe-area-inset-top,0px)) 16px calc(20px + env(safe-area-inset-bottom,0px));
+}
+.wrap{width:100%;max-width:27rem}
+.back{display:inline-block;margin:0 0 .9rem;color:var(--ink);font-size:.95rem}
+.card{background:var(--paper);padding:1.6rem 1.5rem 1.7rem;box-shadow:.4rem .4rem 0 var(--shade)}
+h1,h2{font-family:var(--cond);font-weight:400;text-transform:uppercase;line-height:.95;margin:0 0 .8rem;color:var(--fill);text-shadow:.05em .045em 0 var(--shade)}
+h1{font-size:3.2rem}
+h2{font-size:2.6rem}
+.intro{margin:0 0 1.2rem;color:var(--mute)}
+
+label{display:block;font-weight:600;font-size:.92rem;margin:0 0 1rem}
+input{
+  display:block;width:100%;margin-top:.3rem;padding:.7rem .8rem;font:inherit;font-weight:400;
+  background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:0;
+}
+input:focus{outline:3px solid var(--fill);outline-offset:1px}
+
+.btn{
+  display:block;width:100%;border:0;cursor:pointer;
+  font:1.2rem var(--cond);text-transform:uppercase;letter-spacing:.03em;padding:.6em 1em .5em;
+  background:var(--fill);color:#fff;box-shadow:.2em .2em 0 var(--shade);
+  transition:box-shadow .12s,translate .12s;
+}
+.btn:hover:not(:disabled){translate:.1em .1em;box-shadow:.1em .1em 0 var(--shade)}
+.btn.two{background:transparent;color:var(--ink);box-shadow:none;outline:.12em solid var(--ink);outline-offset:-.12em}
+.btn.two:hover:not(:disabled){translate:none;background:var(--ink);color:var(--paper)}
+.btn.dark{background:var(--ink);color:var(--paper)}
+.btn:disabled{opacity:.55;cursor:not-allowed}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(10rem,1fr));gap:.9rem}
+
+.sep{display:flex;align-items:center;gap:.8rem;margin:1.3rem 0;color:var(--mute);font-size:.9rem}
+.sep::before,.sep::after{content:"";flex:1;height:2px;background:var(--ink);opacity:.25}
+
+.msg{margin:0 0 1.1rem;padding:.75rem .9rem;border-left:.35rem solid;font-size:.95rem}
+.msg.error{background:#fde4e1;border-color:#c0201a;color:#6b0f0a}
+.msg.success{background:#dff3e4;border-color:#1b6b34;color:#12421f}
+.msg.info{background:#e4e9f7;border-color:#2c4a9a;color:#14254f}
+
+.avatar{display:block;width:4.5rem;height:4.5rem;border-radius:50%;border:3px solid var(--ink);margin:0 0 1rem;object-fit:cover}
+.who{margin:0 0 .3rem;word-break:break-word}
+.who strong{font-weight:700}
+.via{margin:0 0 1.4rem;color:var(--mute);font-size:.92rem}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <a class="back" href="./">← Retour au site</a>
+
+  <main class="card">
+    <!-- Messages d'erreur / de succès -->
+    <div id="message" class="msg" hidden></div>
+
+    <!-- Écran : connexion / création de compte -->
+    <section id="vue-connexion" hidden>
+      <h1>Compte</h1>
+      <p class="intro">Connecte-toi ou crée un compte pour continuer.</p>
+
+      <form id="form" novalidate>
+        <label>Adresse e-mail
+          <input id="champ-email" type="email" autocomplete="email" inputmode="email" placeholder="toi@exemple.fr" required>
+        </label>
+        <label>Mot de passe
+          <input id="champ-mdp" type="password" autocomplete="current-password" placeholder="6 caractères minimum" required>
+        </label>
+        <div class="row">
+          <button id="btn-login" class="btn" type="submit">Se connecter</button>
+          <button id="btn-signup" class="btn two" type="button">Créer un compte</button>
+        </div>
+      </form>
+
+      <div class="sep">ou</div>
+      <button id="btn-discord" class="btn dark" type="button">Continuer avec Discord</button>
+    </section>
+
+    <!-- Écran : bienvenue (connecté) -->
+    <section id="vue-bienvenue" hidden>
+      <img id="avatar" class="avatar" alt="" referrerpolicy="no-referrer" hidden>
+      <h2 id="titre-bienvenue">Bienvenue</h2>
+      <p class="who">Tu es connecté·e avec <strong id="user-email"></strong></p>
+      <p class="via" id="via"></p>
+      <button id="btn-logout" class="btn two" type="button">Se déconnecter</button>
+    </section>
+  </main>
+</div>
+
+<!-- SDK Supabase, version précise (jamais « latest ») -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.110.7"></script>
+
+<script>
+/* ======================= À REMPLIR ======================= */
+const SUPABASE_URL = 'https://zjdycgiqgyxeaefyzvjs.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_3z2JkQbbu2EzIACRgKUpKQ_oJl3HGvs';   // clé « anon » / « publishable » UNIQUEMENT. Jamais la clé service_role (ou secret).
+/* ========================================================= */
+
+(function () {
+  'use strict';
+
+  // Adresse de retour après Discord / confirmation d'e-mail = cette page
+  const REDIRECT_URL = location.origin + location.pathname;
+  // On lit l'adresse AVANT que supabase-js ne la nettoie (erreurs, confirmation d'e-mail…)
+  const hashAtLoad = location.hash, searchAtLoad = location.search;
+
+  const $ = (id) => document.getElementById(id);
+  const ui = {
+    message: $('message'), vueConnexion: $('vue-connexion'), vueBienvenue: $('vue-bienvenue'),
+    form: $('form'), email: $('champ-email'), mdp: $('champ-mdp'),
+    btnLogin: $('btn-login'), btnSignup: $('btn-signup'), btnDiscord: $('btn-discord'), btnLogout: $('btn-logout'),
+    userEmail: $('user-email'), titre: $('titre-bienvenue'), via: $('via'), avatar: $('avatar')
+  };
+
+  /* ---------- Messages ---------- */
+  function show(type, text) {
+    ui.message.className = 'msg ' + type;
+    ui.message.textContent = text;
+    ui.message.setAttribute('role', type === 'error' ? 'alert' : 'status');
+    ui.message.hidden = false;
+  }
+  function hideMessage() { ui.message.hidden = true; }
+
+  function frError(err) {
+    const code = String((err && err.code) || '').toLowerCase();
+    const msg = String((err && err.message) || '').toLowerCase();
+    if (code === 'invalid_credentials' || msg.includes('invalid login credentials')) return 'E-mail ou mot de passe incorrect.';
+    if (code === 'email_not_confirmed' || msg.includes('email not confirmed')) return "Ton adresse e-mail n'est pas encore confirmée. Clique sur le lien reçu par e-mail.";
+    if (code === 'user_already_exists' || msg.includes('already registered')) return 'Un compte existe déjà avec cet e-mail. Essaie de te connecter.';
+    if (code === 'weak_password' || msg.includes('password should be')) return 'Mot de passe trop faible : 6 caractères minimum.';
+    if (code === 'over_email_send_rate_limit' || code === 'over_request_rate_limit' || msg.includes('rate limit') || (err && err.status === 429)) return 'Trop de tentatives. Patiente quelques minutes avant de réessayer.';
+    if (code === 'signup_disabled' || msg.includes('signups not allowed')) return 'Les inscriptions sont désactivées pour le moment.';
+    if (code === 'provider_disabled' || msg.includes('provider is not enabled') || msg.includes('unsupported provider')) return "La connexion avec Discord n'est pas activée dans Supabase (Authentication → Sign In / Providers).";
+    if (msg.includes('invalid api key') || msg.includes('invalid jwt')) return 'La clé Supabase est refusée : vérifie SUPABASE_URL et SUPABASE_ANON_KEY dans le fichier.';
+    if (msg.includes('failed to fetch') || msg.includes('networkerror') || msg.includes('load failed')) return "Impossible de joindre Supabase. Vérifie ta connexion internet et l'URL du projet.";
+    return 'Une erreur est survenue' + (err && err.message ? ' (' + err.message + ').' : '.');
+  }
+
+  function frReturnError(r) {
+    const d = String(r.desc || '').toLowerCase();
+    if (r.code === 'otp_expired' || d.includes('expired')) return 'Ce lien a expiré ou a déjà été utilisé. Connecte-toi, ou recrée ton compte pour recevoir un nouveau lien.';
+    if (r.error === 'access_denied') return 'Connexion annulée ou refusée.';
+    if (d.includes('email')) return "Discord n'a pas transmis d'adresse e-mail. Vérifie que l'e-mail de ton compte Discord est confirmé, puis réessaie.";
+    return 'La connexion a échoué' + (r.desc ? ' : ' + r.desc : '.');
+  }
+
+  /* ---------- Affichage selon l'état de connexion ---------- */
+  function render(session) {
+    const user = session && session.user;
+    ui.vueConnexion.hidden = !!user;
+    ui.vueBienvenue.hidden = !user;
+    if (!user) { ui.mdp.value = ''; return; }
+
+    const meta = user.user_metadata || {};
+    const claims = meta.custom_claims || {};
+    const pseudo = claims.global_name || meta.full_name || meta.name || '';
+    ui.userEmail.textContent = user.email || pseudo || 'ton compte';
+    ui.titre.textContent = pseudo ? 'Bienvenue, ' + pseudo : 'Bienvenue';
+    const provider = (user.app_metadata && user.app_metadata.provider) || 'email';
+    ui.via.textContent = provider === 'discord' ? 'Connecté·e via Discord' : 'Connecté·e par e-mail et mot de passe';
+    const avatar = typeof meta.avatar_url === 'string' && meta.avatar_url.startsWith('https://') ? meta.avatar_url : '';
+    if (avatar) { ui.avatar.src = avatar; ui.avatar.hidden = false; } else { ui.avatar.removeAttribute('src'); ui.avatar.hidden = true; }
+  }
+
+  /* ---------- Garde-fous de configuration ---------- */
+  function lock() {
+    document.querySelectorAll('button, input').forEach((el) => { el.disabled = true; });
+  }
+  function keyProblem(key) {
+    if (/COLLE_ICI/i.test(key) || /MON-PROJET/i.test(SUPABASE_URL)) return 'config';
+    if (key.startsWith('sb_secret_')) return 'secret';
+    const parts = key.split('.');
+    if (parts.length === 3) {
+      try {
+        const payload = JSON.parse(atob(parts[1].replace(/-/g, '+').replace(/_/g, '/')));
+        if (payload.role === 'service_role') return 'secret';
+      } catch (e) { /* clé non lisible : on laisse Supabase juger */ }
+    }
+    return null;
+  }
+
+  function start() {
+    render(null);
+
+    const problem = keyProblem(SUPABASE_ANON_KEY);
+    if (problem === 'config') {
+      show('error', 'Configuration manquante : remplis SUPABASE_URL et SUPABASE_ANON_KEY tout en haut du script de compte.html.');
+      return lock();
+    }
+    if (problem === 'secret') {
+      show('error', "STOP : tu as collé une clé secrète (service_role / sb_secret). Retire-la immédiatement de ce fichier et utilise la clé publique (anon / publishable). Si elle a déjà été mise en ligne, régénère-la dans Supabase.");
+      return lock();
+    }
+    if (!window.supabase || typeof window.supabase.createClient !== 'function') {
+      show('error', 'Impossible de charger Supabase (connexion coupée ou bloqueur de publicités ?). Recharge la page.');
+      return lock();
+    }
+
+    const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    /* Retour de Discord / du lien de confirmation : lecture des paramètres de l'adresse */
+    const p = new URLSearchParams(hashAtLoad.replace(/^#/, '') + '&' + searchAtLoad.replace(/^\?/, ''));
+    const back = { error: p.get('error'), code: p.get('error_code'), desc: p.get('error_description'), type: p.get('type') };
+    let confirmationPending = back.type === 'signup';
+    if (back.error) show('error', frReturnError(back));
+
+    /* L'affichage se met à jour tout seul à la connexion et à la déconnexion */
+    client.auth.onAuthStateChange((event, session) => {
+      render(session);
+      if (event === 'SIGNED_IN' && confirmationPending) {
+        confirmationPending = false;
+        show('success', 'Adresse e-mail confirmée, bienvenue !');
+      }
+    });
+
+    client.auth.getSession().then(({ data }) => {
+      render(data && data.session);
+      // Une fois la session lue, on retire les jetons / codes de l'adresse
+      if (/[?&#](access_token|refresh_token|code|error|error_code|error_description|type)=/.test(hashAtLoad + searchAtLoad)) {
+        history.replaceState(null, '', location.pathname);
+      }
+    });
+
+    /* ---------- Actions ---------- */
+    function setBusy(busy) { document.querySelectorAll('button').forEach((b) => { b.disabled = busy; }); }
+    async function run(task) {
+      hideMessage();
+      setBusy(true);
+      try { await task(); } catch (err) { show('error', frError(err)); } finally { setBusy(false); }
+    }
+
+    function readForm(forSignup) {
+      const email = ui.email.value.trim(), mdp = ui.mdp.value;
+      if (!email) { show('error', 'Entre ton adresse e-mail.'); ui.email.focus(); return null; }
+      if (!/^\S+@\S+\.\S+$/.test(email)) { show('error', "Cette adresse e-mail ne semble pas valide."); ui.email.focus(); return null; }
+      if (!mdp) { show('error', 'Entre ton mot de passe.'); ui.mdp.focus(); return null; }
+      if (forSignup && mdp.length < 6) { show('error', "Choisis un mot de passe d'au moins 6 caractères."); ui.mdp.focus(); return null; }
+      return { email, mdp };
+    }
+
+    ui.form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      hideMessage();
+      const v = readForm(false);
+      if (!v) return;
+      run(async () => {
+        const { error } = await client.auth.signInWithPassword({ email: v.email, password: v.mdp });
+        if (error) throw error;
+        show('success', 'Connexion réussie !');
+      });
+    });
+
+    ui.btnSignup.addEventListener('click', () => {
+      hideMessage();
+      ui.mdp.setAttribute('autocomplete', 'new-password');
+      const v = readForm(true);
+      if (!v) return;
+      run(async () => {
+        const { data, error } = await client.auth.signUp({ email: v.email, password: v.mdp, options: { emailRedirectTo: REDIRECT_URL } });
+        if (error) throw error;
+        if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+          show('error', 'Un compte existe déjà avec cet e-mail. Essaie de te connecter.');
+        } else if (data.session) {
+          show('success', 'Compte créé, bienvenue !');
+        } else {
+          show('success', 'Compte créé ! Un e-mail de confirmation vient d\u2019être envoyé à ' + v.email + '. Clique sur le lien qu\u2019il contient, puis reviens te connecter.');
+        }
+      });
+    });
+
+    ui.btnDiscord.addEventListener('click', () => {
+      run(async () => {
+        const { error } = await client.auth.signInWithOAuth({ provider: 'discord', options: { redirectTo: REDIRECT_URL } });
+        if (error) throw error;
+        show('info', 'Redirection vers Discord…');
+      });
+    });
+
+    ui.btnLogout.addEventListener('click', () => {
+      run(async () => {
+        const { error } = await client.auth.signOut();
+        if (error) throw error;
+        show('success', 'Tu es déconnecté·e. À bientôt !');
+      });
+    });
+
+    // Retour en arrière depuis Discord : on réactive les boutons
+    window.addEventListener('pageshow', (e) => { if (e.persisted) setBusy(false); });
+  }
+
+  start();
+})();
+</script>
+</body>
+</html>
