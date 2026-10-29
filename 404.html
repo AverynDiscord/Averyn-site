@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Page introuvable</title>
+<!-- Si tu lis ça : tape "perdu" sur le clavier. -->
+<style>
+:root{
+  --gray:#b4b4b2; /* même gris que le fond de Logo.png, pour qu'il se fonde dans la page */
+  --red:#e00004; --side:#c70004; --top:#ee3524; --under:#a50003;
+  --shade:#5a0000; --ink:#1d1d1b;
+  color-scheme:light;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+html{height:100%}
+body{
+  margin:0;min-height:100%;overflow:hidden;
+  background:var(--gray);color:var(--ink);
+  font:18px/1.5 system-ui,sans-serif;
+}
+main{padding:20vh 6vw 10vh}
+main.shake{animation:shake .45s linear}
+@keyframes shake{
+  0%,100%{transform:none}
+  15%{transform:translate(-2px,1px)}30%{transform:translate(3px,-1px)}
+  45%{transform:translate(-3px,2px)}60%{transform:translate(2px,-2px)}
+  80%{transform:translate(-1px,1px)}
+}
+
+/* Typo façon logo : condensée, majuscules, ombre décalée */
+h1,.sub,.btn{
+  font-family:Impact,Haettenschweiler,"Arial Narrow Bold","Roboto Condensed","Arial Black",sans-serif;
+  font-weight:400;text-transform:uppercase;
+}
+h1{
+  display:flex;align-items:center;
+  color:var(--red);font-size:clamp(7rem,32vw,20rem);line-height:.88;margin:0 0 .1em;letter-spacing:.01em;
+  text-shadow:.05em .045em 0 var(--shade);
+}
+.sub{
+  color:#fff;font-size:clamp(1.7rem,6.5vw,3.2rem);line-height:1;margin:0 0 .6em;
+  text-shadow:.06em .055em 0 var(--shade);
+}
+p{max-width:34em;margin:0 0 1.2em}
+
+/* Bouton : même ombre décalée que le logo. Il tombe d'un bloc. */
+.btn{
+  display:inline-block;background:var(--red);color:#fff;text-decoration:none;
+  font-size:1.25rem;letter-spacing:.03em;padding:.55em 1em .45em;
+  box-shadow:.22em .22em 0 var(--shade);
+  transition:box-shadow .12s,translate .12s;
+}
+.btn:visited{color:#fff}
+.btn:hover{translate:.11em .11em;box-shadow:.11em .11em 0 var(--shade)}
+
+.w{display:inline-block;white-space:nowrap}
+.c{display:inline-block;will-change:transform}
+
+/* Le vrai logo, recadré sur le cube (le PNG a beaucoup de marge) */
+.brand{
+  position:absolute;top:calc(20px + env(safe-area-inset-top,0px));left:6vw;
+  width:4.6rem;aspect-ratio:1752/1855;overflow:hidden;
+}
+.brand img{
+  display:block;width:187.4%;max-width:none;margin-left:-45.1%;margin-top:-34.9%;
+  user-select:none;-webkit-user-drag:none;
+}
+
+/* Le zéro : un petit cube qui tourne */
+#o{
+  position:relative;width:.4em;height:.4em;margin:0 .1em;
+  perspective:500px;cursor:pointer;-webkit-tap-highlight-color:transparent;
+  text-shadow:none;
+}
+#o::before{content:"";position:absolute;inset:-.25em}            /* zone de clic plus large */
+#o::after{                                                         /* ombre au sol */
+  content:"";position:absolute;left:8%;right:8%;bottom:-.2em;height:.07em;
+  background:rgba(0,0,0,.28);border-radius:50%;filter:blur(3px);
+}
+.cube{position:absolute;inset:0;transform-style:preserve-3d;animation:turn 10s linear infinite}
+#o:hover .cube{animation-duration:2.5s}
+@keyframes turn{
+  from{transform:rotateX(-26deg) rotateY(-30deg)}
+  to{transform:rotateX(-26deg) rotateY(330deg)}
+}
+.f{position:absolute;inset:0}
+.f1{transform:translateZ(.2em);background:var(--side)}
+.f2{transform:rotateY(90deg) translateZ(.2em);background:var(--red)}
+.f3{transform:rotateY(180deg) translateZ(.2em);background:var(--side)}
+.f4{transform:rotateY(-90deg) translateZ(.2em);background:var(--red)}
+.f5{transform:rotateX(90deg) translateZ(.2em);background:var(--top)}
+.f6{transform:rotateX(-90deg) translateZ(.2em);background:var(--under)}
+
+#undo{
+  position:fixed;right:6vw;bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  z-index:6;display:none;font:inherit;padding:.4em .8em;
+  background:var(--ink);color:#fff;border:0;cursor:pointer;
+}
+body.fell #undo{display:block}
+
+/* La fissure */
+#crack{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;transition:opacity .6s}
+#crack path{fill:none;stroke-linejoin:round;stroke-linecap:round}
+#crack .dark{stroke:#2a0000;stroke-width:2.2}
+#crack .light{stroke:rgba(255,255,255,.6);stroke-width:1}
+
+/* Easter egg CSS : survole le point final de la phrase */
+body:not(.fell) .pt:hover::after{content:" Tu cherches, toi. Essaie de taper « perdu ».";font-style:italic;color:var(--shade)}
+@media (prefers-reduced-motion:reduce){main.shake{animation:none}.cube{animation:none}.btn{transition:none}}
+</style>
+</head>
+<body>
+<a class="brand c" href="/" aria-label="Averyn, accueil"><img src="Logo.png" alt="Averyn"></a>
+
+<main id="stage">
+  <h1 aria-label="404">4<span id="o" class="c" role="button" aria-label="zéro"><span class="cube"><i class="f f1"></i><i class="f f2"></i><i class="f f3"></i><i class="f f4"></i><i class="f f5"></i><i class="f f6"></i></span></span>4</h1>
+  <p class="sub">Page introuvable</p>
+  <p>Cette page n'existe pas, ou plus. Si tu as cliqué sur un lien, il est sûrement périmé. Sinon, vérifie l'adresse<span class="pt">.</span></p>
+  <p><a class="btn c" href="/">Retour à l'accueil</a></p>
+</main>
+<button id="undo" type="button">Remettre en place</button>
+
+<script>
+(function(){
+  var o=document.getElementById('o'),undo=document.getElementById('undo'),stage=document.getElementById('stage');
+  var split=false,chars=[],token=0,svg=null,pts=[];
+  var rnd=function(a,b){return a+Math.random()*(b-a)};
+
+  /* découpe le texte en lettres (logo, cube et bouton tombent d'un bloc) */
+  function prepare(){
+    if(split)return;split=true;
+    [].slice.call(document.querySelectorAll('h1,p')).forEach(walk);
+    chars=[].slice.call(document.querySelectorAll('.c'));
+  }
+  function walk(node){
+    [].slice.call(node.childNodes).forEach(function(n){
+      if(n.nodeType===3)wrapText(n);
+      else if(n.nodeType===1&&!n.classList.contains('c'))walk(n);
+    });
+  }
+  function wrapText(t){
+    var frag=document.createDocumentFragment();
+    t.nodeValue.split(/(\s+)/).forEach(function(part){
+      if(!part)return;
+      if(/^\s+$/.test(part)){frag.appendChild(document.createTextNode(' '));return}
+      var w=document.createElement('span');w.className='w';
+      part.split('').forEach(function(ch){var c=document.createElement('span');c.className='c';c.textContent=ch;w.appendChild(c)});
+      frag.appendChild(w);
+    });
+    t.parentNode.replaceChild(frag,t);
+  }
+
+  /* la fissure, tracée progressivement */
+  function mkPath(points,cls,delay,dur){
+    var d='M'+points.map(function(p){return p.x.toFixed(1)+' '+p.y.toFixed(1)}).join(' L');
+    var p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',d);p.setAttribute('class',cls);
+    svg.appendChild(p);
+    var len=p.getTotalLength();
+    p.style.strokeDasharray=len;p.style.strokeDashoffset=len;
+    p.getBoundingClientRect();
+    p.style.transition='stroke-dashoffset '+dur+'ms cubic-bezier(.3,.6,.4,1) '+delay+'ms';
+    p.style.strokeDashoffset=0;
+  }
+  function buildCrack(cx){
+    var W=innerWidth,H=innerHeight;
+    svg=document.createElementNS('http://www.w3.org/2000/svg','svg');
+    svg.id='crack';svg.setAttribute('viewBox','0 0 '+W+' '+H);
+    document.body.appendChild(svg);
+    pts=[{x:cx,y:-4}];
+    var x=cx,y=0;
+    while(y<H){y+=rnd(18,46);x+=rnd(-26,26);x=Math.max(8,Math.min(W-8,x));pts.push({x:x,y:y})}
+    mkPath(pts,'dark',0,650);
+    mkPath(pts.map(function(p){return{x:p.x+2,y:p.y}}),'light',40,650);
+    for(var b=0;b<4;b++){
+      var s=pts[Math.floor(rnd(3,pts.length-3))],dir=Math.random()<.5?-1:1;
+      var br=[{x:s.x,y:s.y}],bx=s.x,by=s.y,n=Math.floor(rnd(3,6));
+      for(var i=0;i<n;i++){bx+=dir*rnd(14,40);by+=rnd(-10,28);br.push({x:bx,y:by})}
+      mkPath(br,'dark',rnd(200,500),rnd(250,400));
+    }
+  }
+  function crackX(y){
+    for(var i=1;i<pts.length;i++){
+      if(y<=pts[i].y){var a=pts[i-1],b=pts[i],t=(y-a.y)/((b.y-a.y)||1);return a.x+(b.x-a.x)*t}
+    }
+    return pts[pts.length-1].x;
+  }
+
+  /* effondrement */
+  function collapse(cx){
+    if(document.body.classList.contains('fell'))return;
+    prepare();
+    var my=++token,H=innerHeight,W=innerWidth,G=2400;
+    document.body.classList.add('fell');
+    buildCrack(cx);
+    setTimeout(function(){if(my===token){stage.classList.remove('shake');void stage.offsetWidth;stage.classList.add('shake')}},350);
+
+    var t0=performance.now(),
+    S=chars.map(function(c){
+      c.style.transition='none';c.style.transform='';
+      var r=c.getBoundingClientRect(),mx=r.left+r.width/2,cy=r.top+r.height/2;
+      var dist=Math.abs(mx-crackX(cy)),side=mx<crackX(cy)?-1:1;
+      return{
+        el:c,
+        delay:700+dist/W*900+rnd(0,220),
+        floor:Math.max(0,H-r.bottom-rnd(0,9)),
+        x:0,y:0,r:0,vx:side*rnd(8,60),vy:0,vr:side*rnd(-60,260),
+        done:false
+      };
+    });
+    var last=t0;
+    (function tick(now){
+      if(my!==token)return;
+      var dt=Math.min((now-last)/1000,.033);last=now;
+      var alive=0,el=now-t0;
+      S.forEach(function(s){
+        if(s.done)return;alive++;
+        if(el<s.delay){
+          if(el>s.delay-260){ /* la pièce hésite avant de lâcher */
+            var k=(el-(s.delay-260))/260;
+            s.el.style.transform='translate('+rnd(-1,1)*k*1.5+'px,'+rnd(-1,1)*k+'px) rotate('+rnd(-1,1)*k*2+'deg)';
+          }
+          return;
+        }
+        s.vy+=G*dt;
+        s.y+=s.vy*dt;s.x+=s.vx*dt;s.r+=s.vr*dt;
+        if(s.y>=s.floor){
+          s.y=s.floor;
+          if(s.vy>140){s.vy=-s.vy*.3;s.vx*=.55;s.vr*=.5}
+          else{s.vy=0;s.vx*=.8;s.vr*=.8;if(Math.abs(s.vx)<4&&Math.abs(s.vr)<6)s.done=true}
+        }
+        s.el.style.transform='translate('+s.x.toFixed(1)+'px,'+s.y.toFixed(1)+'px) rotate('+s.r.toFixed(1)+'deg)';
+      });
+      if(alive)requestAnimationFrame(tick);
+    })(t0);
+  }
+
+  function restore(){
+    token++;
+    stage.classList.remove('shake');
+    if(svg){var old=svg;old.style.opacity=0;setTimeout(function(){old.remove()},650);svg=null}
+    chars.forEach(function(c){
+      c.style.transition='transform '+rnd(.6,1)+'s cubic-bezier(.2,.8,.2,1) '+rnd(0,.3)+'s';
+      c.style.transform='';
+    });
+    document.body.classList.remove('fell');
+  }
+  undo.addEventListener('click',restore);
+
+  /* déclencheur clavier : "perdu" */
+  var word='perdu',buf='';
+  addEventListener('keydown',function(e){
+    if(e.key.length!==1)return;
+    buf=(buf+e.key.toLowerCase()).slice(-word.length);
+    if(buf===word){buf='';collapse(innerWidth*rnd(.3,.7))}
+  });
+
+  /* déclencheur tactile : 5 touches sur le cube */
+  var n=0,t;
+  o.addEventListener('click',function(){
+    n++;clearTimeout(t);t=setTimeout(function(){n=0},1500);
+    if(n>=5){n=0;var r=o.getBoundingClientRect();collapse(r.left+r.width/2)}
+  });
+})();
+</script>
+</body>
+</html>
