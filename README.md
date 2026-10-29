@@ -20,3 +20,4 @@ Informations sur le projet
 
 - Projet : Averyn | FrPs
 - Fondateur et propriétaire du projet : Elusive.io
+Test de déploiement GitHub Pages.
