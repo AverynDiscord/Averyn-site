@@ -21,3 +21,4 @@ Informations sur le projet
 - Projet : Averyn | FrPs
 - Fondateur et propriétaire du projet : Elusive.io
 Test de déploiement GitHub Pages.
+- Lien du site internet : https://averyndiscord.github.io/Averyn-site/
