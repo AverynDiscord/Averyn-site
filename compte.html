@@ -168,7 +168,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_3z2JkQbbu2EzIACRgKUpKQ_oJl3HGvs';   //
     if (code === 'invalid_credentials' || msg.includes('invalid login credentials')) return 'E-mail ou mot de passe incorrect.';
     if (code === 'email_not_confirmed' || msg.includes('email not confirmed')) return "Ton adresse e-mail n'est pas encore confirmée. Clique sur le lien reçu par e-mail.";
     if (code === 'user_already_exists' || msg.includes('already registered')) return 'Un compte existe déjà avec cet e-mail. Essaie de te connecter.';
-    if (code === 'weak_password' || msg.includes('password should be')) return 'Mot de passe trop faible : 12 caractères minimum, au moins une majuscule et une minuscule, au moins un chiffre et un caractère spécial.';
+    if (code === 'weak_password' || msg.includes('password should be')) return 'Mot de passe trop faible : 12 caractères minimum, au moins une majuscule, une minuscule, un chiffre et un caractère spécial.';
     if (code === 'over_email_send_rate_limit' || code === 'over_request_rate_limit' || msg.includes('rate limit') || (err && err.status === 429)) return 'Trop de tentatives. Patiente quelques minutes avant de réessayer.';
     if (code === 'signup_disabled' || msg.includes('signups not allowed')) return 'Les inscriptions sont désactivées pour le moment.';
     if (code === 'provider_disabled' || msg.includes('provider is not enabled') || msg.includes('unsupported provider')) return "La connexion avec Discord n'est pas activée dans Supabase (Authentication → Sign In / Providers).";
@@ -277,7 +277,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_3z2JkQbbu2EzIACRgKUpKQ_oJl3HGvs';   //
       if (!email) { show('error', 'Entre ton adresse e-mail.'); ui.email.focus(); return null; }
       if (!/^\S+@\S+\.\S+$/.test(email)) { show('error', "Cette adresse e-mail ne semble pas valide."); ui.email.focus(); return null; }
       if (!mdp) { show('error', 'Entre ton mot de passe.'); ui.mdp.focus(); return null; }
-      if (forSignup && mdp.length < 6) { show('error', "Choisis un mot de passe d'au moins 6 caractères."); ui.mdp.focus(); return null; }
+      if (forSignup && mdp.length < 6) { show('error', "Choisis un mot de passe d'au moins 12 caractères avec au moins une majuscule, une minuscule, un chiffre et un caractère spécial. "); ui.mdp.focus(); return null; }
       return { email, mdp };
     }
 
@@ -336,3 +336,4 @@ const SUPABASE_ANON_KEY = 'sb_publishable_3z2JkQbbu2EzIACRgKUpKQ_oJl3HGvs';   //
 </script>
 </body>
 </html>
+  
