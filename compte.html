@@ -83,7 +83,7 @@ input:focus{outline:3px solid var(--fill);outline-offset:1px}
           <input id="champ-email" type="email" autocomplete="email" inputmode="email" placeholder="toi@exemple.fr" required>
         </label>
         <label>Mot de passe
-          <input id="champ-mdp" type="password" autocomplete="current-password" placeholder="6 caractères minimum" required>
+          <input id="champ-mdp" type="password" autocomplete="current-password" placeholder="12 caractères minimum" required>
         </label>
         <div class="row">
           <button id="btn-login" class="btn" type="submit">Se connecter</button>
@@ -168,7 +168,7 @@ const SUPABASE_ANON_KEY = 'sb_publishable_3z2JkQbbu2EzIACRgKUpKQ_oJl3HGvs';   //
     if (code === 'invalid_credentials' || msg.includes('invalid login credentials')) return 'E-mail ou mot de passe incorrect.';
     if (code === 'email_not_confirmed' || msg.includes('email not confirmed')) return "Ton adresse e-mail n'est pas encore confirmée. Clique sur le lien reçu par e-mail.";
     if (code === 'user_already_exists' || msg.includes('already registered')) return 'Un compte existe déjà avec cet e-mail. Essaie de te connecter.';
-    if (code === 'weak_password' || msg.includes('password should be')) return 'Mot de passe trop faible : 6 caractères minimum.';
+    if (code === 'weak_password' || msg.includes('password should be')) return 'Mot de passe trop faible : 12 caractères minimum, au moins une majuscule et une minuscule, au moins un chiffre et un caractère spécial.';
     if (code === 'over_email_send_rate_limit' || code === 'over_request_rate_limit' || msg.includes('rate limit') || (err && err.status === 429)) return 'Trop de tentatives. Patiente quelques minutes avant de réessayer.';
     if (code === 'signup_disabled' || msg.includes('signups not allowed')) return 'Les inscriptions sont désactivées pour le moment.';
     if (code === 'provider_disabled' || msg.includes('provider is not enabled') || msg.includes('unsupported provider')) return "La connexion avec Discord n'est pas activée dans Supabase (Authentication → Sign In / Providers).";
